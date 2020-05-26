@@ -1,11 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type digit [5]string
-
-var line = "█"
-var sep = "░"
 
 func main() {
 	digits := [10]digit{
@@ -81,16 +81,54 @@ func main() {
 		},
 	}
 
-	sep := [5]string{
+	dots := digit{
 		"   ",
 		" ░ ",
 		"   ",
 		" ░ ",
 		"   ",
 	}
-	_ = sep
 
-	printDigits(digits)
+	blank := digit{
+		"   ",
+		"   ",
+		"   ",
+		"   ",
+		"   ",
+	}
+
+	var sep digit
+
+	for {
+		clearScreen()
+		moveTopLeft()
+
+		now := time.Now()
+		hour := now.Hour()
+		minute := now.Minute()
+		second := now.Second()
+
+		if second%2 == 0 {
+			sep = blank
+		} else {
+			sep = dots
+		}
+
+		clock := [8]digit{
+			digits[hour/10],
+			digits[hour%10],
+			sep,
+			digits[minute/10],
+			digits[minute%10],
+			sep,
+			digits[second/10],
+			digits[second%10],
+		}
+
+		printClock(clock)
+
+		time.Sleep(time.Second)
+	}
 }
 
 func clearScreen() {
@@ -101,9 +139,9 @@ func moveTopLeft() {
 	fmt.Print("\033[H")
 }
 
-func printDigits(d [10]digit) {
+func printClock(c [8]digit) {
 	for i := 0; i < 5; i++ {
-		for _, n := range d {
+		for _, n := range c {
 			fmt.Print(n[i], " ")
 		}
 		fmt.Println()
